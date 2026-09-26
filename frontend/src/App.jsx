@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+
 const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
@@ -14,7 +16,7 @@ function App() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch("http://localhost:5000/todos");
+      const response = await fetch(`${API_URL}/todos`);
       const result = await response.json();
 
       setTasks(result.data || []);
@@ -38,7 +40,7 @@ function App() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/todos", {
+      const response = await fetch(`${API_URL}/todos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,18 +68,15 @@ function App() {
 
   const toggleTaskStatus = async (task) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/todos/${task._id}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            completed: !task.completed,
-          }),
+      const response = await fetch(`${API_URL}/todos/${task._id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          completed: !task.completed,
+        }),
+      });
 
       const result = await response.json();
 
@@ -93,7 +92,7 @@ function App() {
 
   const deleteTask = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/todos/${id}`, {
+      const response = await fetch(`${API_URL}/todos/${id}`, {
         method: "DELETE",
       });
 
@@ -115,7 +114,7 @@ function App() {
 
   const updateTask = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/todos/${id}`, {
+      const response = await fetch(`${API_URL}/todos/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +147,7 @@ function App() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/todos/search?q=${encodeURIComponent(search)}`,
+        `${API_URL}/todos/search?q=${encodeURIComponent(search)}`,
       );
 
       const result = await response.json();
@@ -162,17 +161,13 @@ function App() {
   };
 
   const filterTasks = async (status) => {
-    setFilter(status);
-
     try {
       if (status === "all") {
         fetchTasks();
         return;
       }
 
-      const response = await fetch(
-        `http://localhost:5000/todos?status=${status}`,
-      );
+      const response = await fetch(`${API_URL}/todos?status=${status}`);
 
       const result = await response.json();
 
@@ -187,6 +182,7 @@ function App() {
   return (
     <div className="app">
       <h1>My To-Do List</h1>
+
       <form className="task-form" onSubmit={addTask}>
         <input
           type="text"
@@ -203,7 +199,9 @@ function App() {
 
         <button type="submit">Add Task</button>
       </form>
+
       <h2>My Tasks</h2>
+
       <div className="search-section">
         <input
           type="text"
@@ -214,6 +212,7 @@ function App() {
 
         <button onClick={searchTasks}>Search</button>
       </div>
+
       <div className="filter-buttons">
         <button onClick={() => filterTasks("all")}>All</button>
 
@@ -221,6 +220,7 @@ function App() {
 
         <button onClick={() => filterTasks("completed")}>Completed</button>
       </div>
+
       {loading ? (
         <p>Loading tasks...</p>
       ) : tasks.length === 0 ? (
